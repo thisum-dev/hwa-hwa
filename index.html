@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dragon Palace | Authentic Chinese Cuisine</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts (Chinese-inspired typography) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Three.js (3D Food Models) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- GSAP (Smooth Animations) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  
+  <!-- Custom Styles -->
+  <style>
+    :root {
+      --primary: #e63946;
+      --secondary: #f4a261;
+      --dark: #1d3557;
+      --light: #f1faee;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    
+    .chinese-font {
+      font-family: 'Noto Serif SC', serif;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    /* Floating Animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    /* Gradient Text */
+    .text-gradient {
+      background: linear-gradient(90deg, #e63946, #f4a261);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-white dark:bg-gray-900 transition-colors duration-300">
+  
+  <!-- ===== CUSTOM CURSOR ===== -->
+  <div class="cursor-dot fixed w-3 h-3 bg-red-500 rounded-full pointer-events-none z-50"></div>
+  <div class="cursor-outline fixed w-8 h-8 border-2 border-red-500 rounded-full pointer-events-none z-50"></div>
+  
+  <!-- ===== THREE.JS BACKGROUND ===== -->
+  <div id="threejs-bg" class="fixed top-0 left-0 w-full h-full -z-10 opacity-20"></div>
+  
+  <!-- ===== NAVBAR ===== -->
+  <nav class="fixed w-full bg-white dark:bg-gray-900 shadow-md z-40 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-20 items-center">
+        <!-- Logo -->
+        <div class="flex items-center">
+          <span class="text-3xl font-bold text-gradient chinese-font">龍宮</span>
+          <span class="ml-2 text-xl font-semibold hidden sm:block">Dragon Palace</span>
+        </div>
+        
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex space-x-8">
+          <a href="#home" class="nav-link hover:text-red-500 transition">Home</a>
+          <a href="#menu" class="nav-link hover:text-red-500 transition">Menu</a>
+          <a href="#reservation" class="nav-link hover:text-red-500 transition">Reservations</a>
+          <a href="#about" class="nav-link hover:text-red-500 transition">Our Story</a>
+          <a href="#contact" class="nav-link hover:text-red-500 transition">Contact</a>
+        </div>
+        
+        <!-- Dark Mode Toggle & Mobile Menu Button -->
+        <div class="flex items-center space-x-4">
+          <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <i class="fas fa-moon dark:hidden"></i>
+            <i class="fas fa-sun hidden dark:block"></i>
+          </button>
+          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-900 py-4 px-4 shadow-lg">
+      <div class="flex flex-col space-y-4">
+        <a href="#home" class="nav-link hover:text-red-500 transition">Home</a>
+        <a href="#menu" class="nav-link hover:text-red-500 transition">Menu</a>
+        <a href="#reservation" class="nav-link hover:text-red-500 transition">Reservations</a>
+        <a href="#about" class="nav-link hover:text-red-500 transition">Our Story</a>
+        <a href="#contact" class="nav-link hover:text-red-500 transition">Contact</a>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- ===== HERO SECTION ===== -->
+  <section id="home" class="min-h-screen flex items-center justify-center pt-20 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div class="text-center md:text-left">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            <span class="text-gradient chinese-font">龍宮</span><br>
+            <span class="dark:text-white">Authentic Chinese Cuisine</span>
+          </h1>
+          <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-lg">
+            Experience the rich flavors of traditional Chinese dishes crafted with premium ingredients and centuries-old techniques.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <a href="#reservation" class="bg-gradient-to-r from-red-500 to-orange-400 text-white px-8 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-center">
+              Reserve a Table
+            </a>
+            <a href="#menu" class="border-2 border-red-500 text-red-500 dark:text-white px-8 py-3 rounded-full font-medium hover:bg-red-50 dark:hover:bg-gray-800 transition-all duration-300 text-center">
+              View Menu
+            </a>
+          </div>
+        </div>
+        <div class="relative hidden md:block">
+          <div id="food-3d-model" class="w-full h-96 bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl floating shadow-xl flex items-center justify-center">
+            <!-- Three.js will render here -->
+            <div class="text-center p-8">
+              <i class="fas fa-utensils text-6xl text-gradient mb-4"></i>
+              <h3 class="text-2xl font-bold dark:text-white">Signature Dishes</h3>
+              <p class="text-gray-600 dark:text-gray-300 mt-2">Interactive 3D Preview</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ===== MENU SECTION ===== -->
+  <section id="menu" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4 dark:text-white">Our <span class="text-gradient">Menu</span></h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Explore our carefully curated selection of authentic Chinese dishes.
+        </p>
+      </div>
+      
+      <!-- Menu Filter -->
+      <div class="flex flex-wrap justify-center gap-3 mb-12">
+        <button class="menu-filter-btn px-4 py-2 rounded-full bg-red-500 text-white" data-category="all">All</button>
+        <button class="menu-filter-btn px-4 py-2 rounded-full bg-white dark:bg-gray-700 hover:bg-red-500 hover:text-white transition" data-category="appetizers">Appetizers</button>
+        <button class="menu-filter-btn px-4 py-2 rounded-full bg-white dark:bg-gray-700 hover:bg-red-500 hover:text-white transition" data-category="main">Main Courses</button>
+        <button class="menu-filter-btn px-4 py-2 rounded-full bg-white dark:bg-gray-700 hover:bg-red-500 hover:text-white transition" data-category="noodles">Noodles</button>
+        <button class="menu-filter-btn px-4 py-2 rounded-full bg-white dark:bg-gray-700 hover:bg-red-500 hover:text-white transition" data-category="desserts">Desserts</button>
+        <button class="menu-filter-btn px-4 py-2 rounded-full bg-white dark:bg-gray-700 hover:bg-red-500 hover:text-white transition" data-category="drinks">Drinks</button>
+      </div>
+      
+      <!-- Menu Items -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Appetizer 1 -->
+        <div class="menu-item bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" data-category="appetizers">
+          <div class="h-48 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 flex items-center justify-center rounded-t-xl">
+            <i class="fas fa-drumstick-bite text-6xl text-gradient"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold dark:text-white">Peking Duck</h3>
+              <span class="text-red-500 font-bold">$18.99</span>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Crispy roasted duck served with thin pancakes, hoisin sauce, and scallions.
+            </p>
+            <div class="flex items-center text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="ml-2 text-gray-500 dark:text-gray-400">(48)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Appetizer 2 -->
+        <div class="menu-item bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" data-category="appetizers">
+          <div class="h-48 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 flex items-center justify-center rounded-t-xl">
+            <i class="fas fa-dumpling text-6xl text-gradient"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold dark:text-white">Steamed Dumplings</h3>
+              <span class="text-red-500 font-bold">$12.99</span>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Delicate dumplings filled with pork and vegetables, served with soy-vinegar dip.
+            </p>
+            <div class="flex items-center text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <span class="ml-2 text-gray-500 dark:text-gray-400">(62)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Main Course 1 -->
+        <div class="menu-item bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" data-category="main">
+          <div class="h-48 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 flex items-center justify-center rounded-t-xl">
+            <i class="fas fa-fish text-6xl text-gradient"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold dark:text-white">Sichuan Fish</h3>
+              <span class="text-red-500 font-bold">$22.99</span>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Spicy fish fillet cooked with Sichuan peppercorns, chili, and aromatic spices.
+            </p>
+            <div class="flex items-center text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <span class="ml-2 text-gray-500 dark:text-gray-400">(54)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Noodles -->
+        <div class="menu-item bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" data-category="noodles">
+          <div class="h-48 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 flex items-center justify-center rounded-t-xl">
+            <i class="fas fa-noodles text-6xl text-gradient"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold dark:text-white">Dan Dan Noodles</h3>
+              <span class="text-red-500 font-bold">$14.99</span>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Spicy Sichuan noodles with minced pork, chili oil, and crushed peanuts.
+            </p>
+            <div class="flex items-center text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="ml-2 text-gray-500 dark:text-gray-400">(47)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Dessert -->
+        <div class="menu-item bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" data-category="desserts">
+          <div class="h-48 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 flex items-center justify-center rounded-t-xl">
+            <i class="fas fa-ice-cream text-6xl text-gradient"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold dark:text-white">Mango Pudding</h3>
+              <span class="text-red-500 font-bold">$8.99</span>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Creamy mango pudding topped with fresh mango chunks and coconut milk.
+            </p>
+            <div class="flex items-center text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <span class="ml-2 text-gray-500 dark:text-gray-400">(39)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Drink -->
+        <div class="menu-item bg-white dark:bg-gray-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" data-category="drinks">
+          <div class="h-48 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 flex items-center justify-center rounded-t-xl">
+            <i class="fas fa-mug-hot text-6xl text-gradient"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold dark:text-white">Jasmine Tea</h3>
+              <span class="text-red-500 font-bold">$4.99</span>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Fragrant jasmine tea served traditionally to complement your meal.
+            </p>
+            <div class="flex items-center text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span class="ml-2 text-gray-500 dark:text-gray-400">(28)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ===== RESERVATION SECTION ===== -->
+  <section id="reservation" class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-xl overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+          <div class="p-8 lg:p-10">
+            <h2 class="text-3xl font-bold mb-2 dark:text-white">Book Your <span class="text-gradient">Table</span></h2>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+              Reserve your dining experience at Dragon Palace. We'll confirm your booking shortly.
+            </p>
+            <form id="reservation-form">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="res-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                  <input type="text" id="res-name" name="name" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+                </div>
+                <div>
+                  <label for="res-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                  <input type="email" id="res-email" name="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+                </div>
+                <div>
+                  <label for="res-phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                  <input type="tel" id="res-phone" name="phone" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+                </div>
+                <div>
+                  <label for="res-guests" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of Guests</label>
+                  <select id="res-guests" name="guests" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+                    <option value="1">1 Person</option>
+                    <option value="2">2 People</option>
+                    <option value="3">3 People</option>
+                    <option value="4">4 People</option>
+                    <option value="5">5 People</option>
+                    <option value="6">6 People</option>
+                    <option value="7">7+ People</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="res-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                  <input type="date" id="res-date" name="date" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+                </div>
+                <div>
+                  <label for="res-time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                  <select id="res-time" name="time" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="17:00">5:00 PM</option>
+                    <option value="18:00">6:00 PM</option>
+                    <option value="19:00">7:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                    <option value="21:00">9:00 PM</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-6">
+                <label for="res-notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Special Requests</label>
+                <textarea id="res-notes" name="notes" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700"></textarea>
+              </div>
+              <div class="mt-8">
+                <button type="submit" class="w-full bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all duration-300">
+                  Confirm Reservation
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="bg-red-500 text-white p-8 lg:p-10 flex flex-col justify-center">
+            <div class="text-center">
+              <i class="fas fa-utensils text-6xl mb-6"></i>
+              <h3 class="text-2xl font-bold mb-4">Reservation Info</h3>
+              <div class="space-y-4 text-left">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <p class="ml-3">
+                    <span class="font-semibold">Hours:</span><br>
+                    Mon-Fri: 11am-10pm<br>
+                    Sat-Sun: 10am-11pm
+                  </p>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-phone"></i>
+                  </div>
+                  <p class="ml-3">
+                    <span class="font-semibold">Phone:</span> (123) 456-7890
+                  </p>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-map-marker-alt"></i>
+                  </div>
+                  <p class="ml-3">
+                    <span class="font-semibold">Location:</span><br>
+                    88 Fortune Street, Chinatown
+                  </p>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-info-circle"></i>
+                  </div>
+                  <p class="ml-3">
+                    <span class="font-semibold">Note:</span> Reservations held for 15 minutes past booking time.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ===== ABOUT SECTION ===== -->
+  <section id="about" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="order-2 lg:order-1">
+          <h2 class="text-4xl font-bold mb-6 dark:text-white">Our <span class="text-gradient">Story</span></h2>
+          <p class="text-gray-600 dark:text-gray-300 mb-4 text-lg">
+            Founded in 1985 by Master Chef Li Wei, Dragon Palace brings authentic Chinese cuisine with generations of culinary tradition.
+          </p>
+          <p class="text-gray-600 dark:text-gray-300 mb-6 text-lg">
+            Using only the freshest ingredients and traditional cooking methods, we create dishes that honor China's rich culinary heritage while embracing modern techniques.
+          </p>
+          <div class="space-y-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mt-1">
+                <i class="fas fa-check-circle text-red-500"></i>
+              </div>
+              <p class="ml-3 text-gray-700 dark:text-gray-300">
+                <span class="font-semibold">Authentic Recipes:</span> Passed down through generations
+              </p>
+            </div>
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mt-1">
+                <i class="fas fa-check-circle text-red-500"></i>
+              </div>
+              <p class="ml-3 text-gray-700 dark:text-gray-300">
+                <span class="font-semibold">Premium Ingredients:</span> Sourced from trusted suppliers
+              </p>
+            </div>
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mt-1">
+                <i class="fas fa-check-circle text-red-500"></i>
+              </div>
+              <p class="ml-3 text-gray-700 dark:text-gray-300">
+                <span class="font-semibold">Master Chefs:</span> Trained in traditional Chinese culinary arts
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="order-1 lg:order-2 relative">
+          <div class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-600 dark:to-gray-500 rounded-3xl h-96 w-full shadow-lg flex items-center justify-center floating">
+            <div class="text-center p-8">
+              <i class="fas fa-history text-6xl text-gradient mb-4"></i>
+              <h3 class="text-2xl font-bold dark:text-white">Since 1985</h3>
+              <p class="text-gray-600 dark:text-gray-300 mt-2">Serving authentic flavors for generations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ===== TESTIMONIALS SECTION ===== -->
+  <section class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4 dark:text-white">What Our <span class="text-gradient">Guests Say</span></h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Don't just take our word for it - hear from our satisfied customers.
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Testimonial 1 -->
+        <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 mr-4">
+              <div class="h-12 w-12 bg-gradient-to-r from-red-100 to-orange-100 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-red-500"></i>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-bold dark:text-white">Michael Chen</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-300 italic">
+            "The Peking Duck here is the best I've had outside of Beijing. The flavors are authentic and the service is impeccable."
+          </p>
+        </div>
+        
+        <!-- Testimonial 2 -->
+        <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 mr-4">
+              <div class="h-12 w-12 bg-gradient-to-r from-red-100 to-orange-100 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-red-500"></i>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-bold dark:text-white">Sarah Johnson</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-300 italic">
+            "The ambiance is perfect for a date night, and the Sichuan Fish was perfectly spicy. We'll definitely be back!"
+          </p>
+        </div>
+        
+        <!-- Testimonial 3 -->
+        <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 mr-4">
+              <div class="h-12 w-12 bg-gradient-to-r from-red-100 to-orange-100 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-red-500"></i>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-bold dark:text-white">David Wilson</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-300 italic">
+            "As someone from Chengdu, I can say the Dan Dan Noodles here taste just like home. Authentic flavors and generous portions."
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ===== CONTACT SECTION ===== -->
+  <section id="contact" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4 dark:text-white">Visit <span class="text-gradient">Us</span></h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          We'd love to welcome you to Dragon Palace. Here's how to find us.
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div>
+          <form id="contact-form" class="space-y-6">
+            <div>
+              <label for="contact-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+              <input type="text" id="contact-name" name="name" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+            </div>
+            <div>
+              <label for="contact-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+              <input type="email" id="contact-email" name="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+            </div>
+            <div>
+              <label for="contact-subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+              <input type="text" id="contact-subject" name="subject" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required>
+            </div>
+            <div>
+              <label for="contact-message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
+              <textarea id="contact-message" name="message" rows="5" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700" required></textarea>
+            </div>
+            <div>
+              <button type="submit" class="bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all duration-300">
+                Send Message
+              </button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <div class="bg-white dark:bg-gray-700 rounded-2xl p-8 h-full shadow-lg">
+            <div class="space-y-6">
+              <div>
+                <h3 class="text-2xl font-bold dark:text-white mb-4">Contact Information</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                  Have questions about our menu or want to host a private event? Reach out to us.
+                </p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-map-marker-alt text-red-500"></i>
+                  </div>
+                  <div class="ml-4">
+                    <h4 class="font-semibold dark:text-white">Address</h4>
+                    <p class="text-gray-600 dark:text-gray-300">88 Fortune Street<br>Chinatown, NY 10013</p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-phone text-red-500"></i>
+                  </div>
+                  <div class="ml-4">
+                    <h4 class="font-semibold dark:text-white">Phone</h4>
+                    <p class="text-gray-600 dark:text-gray-300">(123) 456-7890</p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-envelope text-red-500"></i>
+                  </div>
+                  <div class="ml-4">
+                    <h4 class="font-semibold dark:text-white">Email</h4>
+                    <p class="text-gray-600 dark:text-gray-300">info@dragonpalace.com</p>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-clock text-red-500"></i>
+                  </div>
+                  <div class="ml-4">
+                    <h4 class="font-semibold dark:text-white">Hours</h4>
+                    <p class="text-gray-600 dark:text-gray-300">
+                      Monday-Friday: 11am-10pm<br>
+                      Saturday-Sunday: 10am-11pm
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-4">
+                <h4 class="font-semibold dark:text-white mb-3">Follow Us</h4>
+                <div class="flex space-x-4">
+                  <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300">
+                    <i class="fab fa-facebook-f text-xl"></i>
+                  </a>
+                  <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300">
+                    <i class="fab fa-instagram text-xl"></i>
+                  </a>
+                  <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300">
+                    <i class="fab fa-twitter text-xl"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-gray-900 text-white pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div>
+          <h3 class="text-2xl font-bold text-gradient chinese-font mb-4">龍宮</h3>
+          <p class="text-gray-400">
+            Authentic Chinese cuisine served with tradition and modern elegance since 1985.
+          </p>
+          <div class="flex space-x-4 mt-6">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="#home" class="text-gray-400 hover:text-white transition-colors duration-300">Home</a></li>
+            <li><a href="#menu" class="text-gray-400 hover:text-white transition-colors duration-300">Menu</a></li>
+            <li><a href="#reservation" class="text-gray-400 hover:text-white transition-colors duration-300">Reservations</a></li>
+            <li><a href="#about" class="text-gray-400 hover:text-white transition-colors duration-300">Our Story</a></li>
+            <li><a href="#contact" class="text-gray-400 hover:text-white transition-colors duration-300">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li class="flex items-start">
+              <i class="fas fa-map-marker-alt mt-1 mr-3 text-red-500"></i>
+              <span>88 Fortune Street, Chinatown, NY 10013</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-phone mt-1 mr-3 text-red-500"></i>
+              <span>(123) 456-7890</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-envelope mt-1 mr-3 text-red-500"></i>
+              <span>info@dragonpalace.com</span>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Hours</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li>Monday-Friday: 11am-10pm</li>
+            <li>Saturday-Sunday: 10am-11pm</li>
+          </ul>
+          <div class="mt-6">
+            <a href="#reservation" class="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-medium transition-colors duration-300">
+              Book a Table
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
+        <p>&copy; 2023 Dragon Palace. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- ===== BACK TO TOP BUTTON ===== -->
+  <button id="back-to-top" class="fixed bottom-8 right-8 bg-red-500 text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 z-40">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+    
+    // Check for saved theme preference
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+    
+    // Smooth Scrolling for Navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          // Close mobile menu if open
+          mobileMenu.classList.add('hidden');
+        }
+      });
+    });
+    
+    // Back to Top Button
+    const backToTopBtn = document.getElementById('back-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Menu Filter
+    const menuFilterBtns = document.querySelectorAll('.menu-filter-btn');
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        menuFilterBtns.forEach(b => b.classList.remove('bg-red-500', 'text-white'));
+        menuFilterBtns.forEach(b => b.classList.add('bg-white', 'dark:bg-gray-700', 'hover:bg-red-500', 'hover:text-white'));
+        btn.classList.add('bg-red-500', 'text-white');
+        btn.classList.remove('bg-white', 'dark:bg-gray-700', 'hover:bg-red-500', 'hover:text-white');
+        
+        // Filter items
+        const category = btn.dataset.category;
+        
+        menuItems.forEach(item => {
+          if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+    
+    // Form Submissions
+    const reservationForm = document.getElementById('reservation-form');
+    const contactForm = document.getElementById('contact-form');
+    
+    reservationForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you for your reservation request! We will contact you shortly to confirm.');
+      reservationForm.reset();
+    });
+    
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you for your message! We will get back to you soon.');
+      contactForm.reset();
+    });
+    
+    // Custom Cursor
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    
+    window.addEventListener('mousemove', (e) => {
+      cursorDot.style.left = `${e.clientX}px`;
+      cursorDot.style.top = `${e.clientY}px`;
+      
+      cursorOutline.style.left = `${e.clientX}px`;
+      cursorOutline.style.top = `${e.clientY}px`;
+    });
+    
+    // Change cursor on hover
+    document.querySelectorAll('a, button, .menu-item').forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        cursorDot.style.transform = 'scale(2)';
+        cursorOutline.style.transform = 'scale(1.5)';
+      });
+      
+      element.addEventListener('mouseleave', () => {
+        cursorDot.style.transform = 'scale(1)';
+        cursorOutline.style.transform = 'scale(1)';
+      });
+    });
+    
+    // Three.js Background
+    const initThreeJS = () => {
+      const canvas = document.getElementById('threejs-bg');
+      
+      // Scene
+      const scene = new THREE.Scene();
+      
+      // Camera
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 5;
+      
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ 
+        alpha: true,
+        antialias: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      canvas.appendChild(renderer.domElement);
+      
+      // Particles
+      const particlesGeometry = new THREE.BufferGeometry();
+      const particleCount = 1000;
+      
+      const posArray = new Float32Array(particleCount * 3);
+      
+      for (let i = 0; i < particleCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 10;
+      }
+      
+      particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      
+      const particlesMaterial = new THREE.PointsMaterial({
+        size: 0.02,
+        color: 0xe63946,
+        transparent: true,
+        opacity: 0.8
+      });
+      
+      const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+      scene.add(particlesMesh);
+      
+      // Animation
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        particlesMesh.rotation.x += 0.0005;
+        particlesMesh.rotation.y += 0.0005;
+        
+        renderer.render(scene, camera);
+      }
+      
+      animate();
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    };
+    
+    // Initialize Three.js when the page loads
+    window.addEventListener('load', initThreeJS);
+    
+    // GSAP Animations
+    gsap.from(".nav-link", {
+      duration: 1,
+      y: -50,
+      opacity: 0,
+      stagger: 0.2,
+      delay: 0.5
+    });
+    
+    gsap.from("#hero-content", {
+      duration: 1,
+      x: -100,
+      opacity: 0,
+      delay: 0.8
+    });
+    
+    gsap.from("#food-3d-model", {
+      duration: 1,
+      x: 100,
+      opacity: 0,
+      delay: 0.8
+    });
+  </script>
+</body>
+</html>
